@@ -28,3 +28,24 @@ func RemoveInvalidTargets(logger *text.Logger, targets []string, mode parser.Tar
 
 	return filteredTargets
 }
+
+// QualifyAURTargets prefixes unqualified targets with the aur db when running
+// in --aur mode, so repo packages that provide or replace the name are not
+// picked over the AUR package.
+func QualifyAURTargets(mode parser.TargetMode, targets []string) []string {
+	if mode != parser.ModeAUR {
+		return targets
+	}
+
+	qualified := make([]string, len(targets))
+
+	for i, target := range targets {
+		if dbName, _ := text.SplitDBFromName(target); dbName == "" {
+			target = "aur/" + target
+		}
+
+		qualified[i] = target
+	}
+
+	return qualified
+}

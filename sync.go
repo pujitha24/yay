@@ -10,6 +10,7 @@ import (
 
 	"github.com/Jguer/yay/v13/pkg/db"
 	"github.com/Jguer/yay/v13/pkg/dep"
+	"github.com/Jguer/yay/v13/pkg/query"
 	"github.com/Jguer/yay/v13/pkg/runtime"
 	"github.com/Jguer/yay/v13/pkg/settings"
 	"github.com/Jguer/yay/v13/pkg/settings/exe"
@@ -46,7 +47,8 @@ func syncInstall(ctx context.Context,
 	grapher := dep.NewGrapher(dbExecutor, aurCache, false, settings.NoConfirm,
 		noDeps, noCheck, cmdArgs.ExistsArg("needed"), run.Logger.Child("grapher"))
 
-	graph, err := grapher.GraphFromTargets(ctx, nil, cmdArgs.Targets)
+	graph, err := grapher.GraphFromTargets(ctx, nil,
+		query.QualifyAURTargets(run.Cfg.Mode, cmdArgs.Targets))
 	if err != nil {
 		return err
 	}
